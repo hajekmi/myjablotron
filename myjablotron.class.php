@@ -22,13 +22,28 @@ class MyJablotron {
 	public function __construct($username, $password) {
 		$this->username = $username;
 		$this->password = $password;
-		if( ! defined(MY_COOKIE_FILE)) {
-			define(MY_COOKIE_FILE, '/tmp/cookies.txt');
+		if( ! defined('MY_COOKIE_FILE')) {
+			define('MY_COOKIE_FILE', '/tmp/cookies.txt');
 		}
 		if(is_file(MY_COOKIE_FILE)) {
 			unlink(MY_COOKIE_FILE);
 		}
 	}
+
+
+	/**
+	 * Cleanup curl and cookies file
+	 */
+	public function __destruct() {
+		if(is_resource($this->curlHandle)) {
+			curl_close($this->curlHandle);
+			$this->curlHandle = null;
+		}
+		if(is_file(MY_COOKIE_FILE)) {
+			unlink(MY_COOKIE_FILE);
+		}
+	}
+
 
 	/**
 	 * Set debug to STDOUT
@@ -226,7 +241,7 @@ class MyJablotron {
 		$this->curl('https://www.jablonet.net/app/ja100/switch.php?switch=history', null);
 		$output = $this->curlGetResponse('output');
 		$output = explode("\n", $output);
-		$data = [];
+		$data = Array();
 		$i = 0;
 		$day = '';
 		foreach($output as $line) {
@@ -294,12 +309,13 @@ class MyJablotron {
 		}
 
 		if($this->debug) {
-			file_put_contents($this->debugFile, "CURL: Connecting $url\n", FILE_APPEND);
+			file_put_contents($this->debugFile, date('Y-m-d H:i:s')." CURL: Connecting $url\n", FILE_APPEND);
 		}
 
 		curl_setopt($this->curlHandle, CURLOPT_URL, $url); 
 		curl_setopt($this->curlHandle, CURLOPT_TIMEOUT, 60); 
-		curl_setopt($this->curlHandle, CURLOPT_RETURNTRANSFER, true); 
+		curl_setopt($this->curlHandle, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->curlHandle, CURLOPT_COOKIESESSION, true);
 		curl_setopt($this->curlHandle, CURLOPT_COOKIEJAR, MY_COOKIE_FILE); 
 		curl_setopt($this->curlHandle, CURLOPT_COOKIEFILE, MY_COOKIE_FILE);
 		if(strlen($postString)>0) {
@@ -307,16 +323,16 @@ class MyJablotron {
 			curl_setopt($this->curlHandle, CURLOPT_POSTFIELDS, $postString);
 
 			if($this->debug) {
-				file_put_contents($this->debugFile, "CURL: Posting data $postString\n", FILE_APPEND);
+				file_put_contents($this->debugFile, date('Y-m-d H:i:s')." CURL: Posting data $postString\n", FILE_APPEND);
 			}
 		}
 
 		$this->curlResponse['output'] = curl_exec($this->curlHandle);
 		$this->curlResponse['httpCode'] = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
 		if($this->debug) {
-			file_put_contents($this->debugFile, "CURL: HTTP CODE ".$this->curlResponse['httpCode']."\n", FILE_APPEND);
-			file_put_contents($this->debugFile, "CURL: Response ".$this->curlResponse['output']."\n", FILE_APPEND);
-			file_put_contents($this->debugFile, "------------------------------------------------\n", FILE_APPEND);
+			file_put_contents($this->debugFile, date('Y-m-d H:i:s')." CURL: HTTP CODE ".$this->curlResponse['httpCode']."\n", FILE_APPEND);
+			file_put_contents($this->debugFile, date('Y-m-d H:i:s')." CURL: Response ".$this->curlResponse['output']."\n", FILE_APPEND);
+			file_put_contents($this->debugFile, date('Y-m-d H:i:s')." ------------------------------------------------\n", FILE_APPEND);
 		}
 	}
 
