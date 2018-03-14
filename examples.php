@@ -7,7 +7,7 @@
 
 include('myjablotron.class.php');
 
-define(MY_COOKIE_FILE, '/tmp/cookies.txt'); // curl store cookies
+define('MY_COOKIE_FILE', '/tmp/cookies.txt'); // curl store cookies
 
 
 $MyUsername = 'login'; // Set login to www.jablonet.net
