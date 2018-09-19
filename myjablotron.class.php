@@ -103,9 +103,8 @@ class MyJablotron {
 		return $this->lock($sectionName, $pin);
 	}
 
-
 	/**
-	 * Lock section
+	 * Lock section (status 1)
 	 * @param $sectionName - string Section name (ex. STATE_3)
 	 * @param $pin - string PIN
 	 * @return boolean
@@ -123,6 +122,24 @@ class MyJablotron {
 		}
 	}
 
+	/**
+	 * Lock section bypass (status 4)
+	 * @param $sectionName - string Section name (ex. STATE_3)
+	 * @param $pin - string PIN
+	 * @return boolean
+	 */
+	public function lockBypass($sectionName, $pin) {
+		$this->curl('https://www.jablonet.net/app/ja100/ajax/ovladani2.php', 'section='.urlencode($sectionName).'&status=4&code='.urlencode($pin));
+		$output = $this->curlGetResponse('output');
+		$json = json_decode($output, true);
+		if(isset($json['result']) && ( $json['result'] == 0 || $json['result'] == 1 )) {
+			return true;
+		}
+		else {
+			$this->errors[] = 'Unable lock';
+			return false;
+		}
+	}
 
 	/**
 	 * UnLock section
