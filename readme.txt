@@ -13,6 +13,7 @@ login() - Login to MyJablotron
 debug() - Enable or disable debug
 sendPGMSignal() - Send signal to PGM output (open or close garage door)
 lock() - Lock section
+lockBypass() - Lock bypass section (open window active lock section)
 unlock() - Unlock section
 getKeyboards() - Get all sections on keyboards
 getSection() - Get sections to lock or unlock
