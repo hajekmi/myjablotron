@@ -42,6 +42,12 @@ if($ja100->login() == true) {
 	// var_dump($success);
 
 	/*
+	 * Lock bypass section name STATE_3
+	 */
+	// $success = $ja100->lockBypass('STATE_3', $MyPIN);
+	// var_dump($success);
+	
+	/*
 	 * Unlock section name STATE_3
 	 */
 	// $success = $ja100->unlock('STATE_3', $MyPIN);
